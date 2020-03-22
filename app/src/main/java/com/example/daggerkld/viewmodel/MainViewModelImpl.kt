@@ -17,7 +17,7 @@ class MainViewModelImpl @Inject constructor(
 
     override fun removeData(index: Int) {
         repository.remove(index)
-        data.value = repository.get()
+        data.postValue(repository.get())
     }
 
     override fun fetchData(): LiveData<List<String>> {
@@ -26,6 +26,6 @@ class MainViewModelImpl @Inject constructor(
 
     override fun addData(value: String) {
         repository.add(value)
-        data.value = repository.get()
+        data.postValue(repository.get())
     }
 }

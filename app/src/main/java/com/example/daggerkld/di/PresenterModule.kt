@@ -1,5 +1,6 @@
 package com.example.daggerkld.di
 
+import com.example.daggerkld.data.DataRepository
 import com.example.daggerkld.presenter.MainPresenter
 import com.example.daggerkld.presenter.MainPresenterImpl
 import dagger.Module
@@ -10,5 +11,6 @@ import javax.inject.Singleton
 class PresenterModule {
     @Provides
     @Singleton
-    fun provideMainPresenter(): MainPresenter = MainPresenterImpl()
+    fun provideMainPresenter(dataRepository: DataRepository): MainPresenter =
+        MainPresenterImpl(dataRepository)
 }

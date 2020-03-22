@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.R
-import java.util.UUID
 
 class ProductListAdapter(
     private val data: List<String>,
@@ -15,7 +14,7 @@ class ProductListAdapter(
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface ProductItemInterface {
-        fun click(title: String)
+        fun click(index: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -26,7 +25,7 @@ class ProductListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val productItem = holder as ProductItem
-        productItem.bind(data[position])
+        productItem.bind(position)
     }
 
     override fun getItemCount(): Int {
@@ -37,11 +36,12 @@ class ProductListAdapter(
         itemView: View) : RecyclerView.ViewHolder(itemView) {
         private var productItemTextView: TextView? = null
 
-        fun bind(title: String) {
+        fun bind(index: Int) {
+            val title = data[index]
             productItemTextView = itemView.findViewById(R.id.tv_product_item_title)
-            productItemTextView?.text = "${title}-${UUID.randomUUID()}"
+            productItemTextView?.text = title
             productItemTextView?.setOnClickListener {
-                productItemInterface.click(title)
+                productItemInterface.click(index)
             }
         }
     }

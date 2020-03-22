@@ -1,5 +1,6 @@
 package com.example.daggerkld.presenter
 
 interface MainPresenter {
-    fun showLog()
+    fun fetchData(): List<String>
+    fun removeData(index: Int)
 }

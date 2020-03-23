@@ -1,4 +1,4 @@
-package com.example.daggerkld.data
+package com.example.daggerkld.repository
 
 class DataRepository {
 

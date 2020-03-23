@@ -1,6 +1,6 @@
 package com.example.daggerkld.di
 
-import com.example.daggerkld.data.DataRepository
+import com.example.daggerkld.repository.DataRepository
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

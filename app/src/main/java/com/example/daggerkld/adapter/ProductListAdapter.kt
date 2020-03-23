@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.R
 
 class ProductListAdapter(
-    private val data: List<String>,
     private val productItemInterface: ProductItemInterface
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -18,6 +17,8 @@ class ProductListAdapter(
         fun showProductEmptyText()
         fun hideProductEmptyText()
     }
+
+    private var data = mutableListOf<String>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -44,11 +45,13 @@ class ProductListAdapter(
         } else {
             productItemInterface.hideProductEmptyText()
         }
+        data = newData.toMutableList()
         this.notifyDataSetChanged()
     }
 
     inner class ProductItem(
-        itemView: View) : RecyclerView.ViewHolder(itemView) {
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
         private var productItemTextView: TextView? = null
 
         fun bind(index: Int) {

@@ -15,6 +15,8 @@ class ProductListAdapter(
 
     interface ProductItemInterface {
         fun click(index: Int)
+        fun showProductEmptyText()
+        fun hideProductEmptyText()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -30,6 +32,19 @@ class ProductListAdapter(
 
     override fun getItemCount(): Int {
         return data.size
+    }
+
+    fun getItem(index: Int): String {
+        return data[index]
+    }
+
+    fun populateList(newData: List<String>) {
+        if (newData.isNullOrEmpty()) {
+            productItemInterface.showProductEmptyText()
+        } else {
+            productItemInterface.hideProductEmptyText()
+        }
+        this.notifyDataSetChanged()
     }
 
     inner class ProductItem(

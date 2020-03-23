@@ -6,26 +6,34 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/tv_product_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/your_product_is_empty"
+        android:textAlignment="center"
+        android:padding="8dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_product_list"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        >
+        android:layout_height="400dp">
     </androidx.recyclerview.widget.RecyclerView>
 
     <EditText
         android:id="@+id/tv_add_product"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Add Product Here"
-        android:inputType="text"
-        />
+        android:hint="@string/add_product_here"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/btn_show_toast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Hello World!"/>
+        android:text="@string/add_product" />
 
 </LinearLayout>

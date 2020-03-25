@@ -11,11 +11,13 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.adapter.ProductListAdapter
 import com.example.daggerkld.data.Response
 import com.example.daggerkld.di.App
+import com.example.daggerkld.di.ViewModelProviderFactory
 import com.example.daggerkld.extension.hide
 import com.example.daggerkld.extension.show
 import com.example.daggerkld.viewmodel.MainViewModel
@@ -29,9 +31,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addProductTextView: EditText
     private lateinit var productStatusTextView: TextView
     private lateinit var app: App
+    private lateinit var viewModel: MainViewModel
 
     @Inject
-    lateinit var viewModel: MainViewModel
+    lateinit var viewModelProviderFactory: ViewModelProviderFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         this.app = application as App
         this.app.applicationComponent.inject(this)
         this.init()
+
+        viewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel::class.java)
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
                 is Response.Success -> productListAdapter.populateList(response.data)

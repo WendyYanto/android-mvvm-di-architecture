@@ -1,16 +1,26 @@
 package com.example.daggerkld.di
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.daggerkld.repository.DataRepository
 import com.example.daggerkld.viewmodel.MainViewModel
-import com.example.daggerkld.viewmodel.MainViewModelImpl
+import dagger.MapKey
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
+import dagger.multibindings.IntoMap
 
 @Module
 class ViewModelModule {
+
     @Provides
-    @Singleton
-    fun provideMainViewModel(dataRepository: DataRepository): MainViewModel =
-        MainViewModelImpl(dataRepository)
+    @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    fun provideMainViewModel(dataRepository: DataRepository): ViewModel {
+        return MainViewModel(dataRepository)
+    }
+
+    @Provides
+    fun provideViewModelFactory(map: Map<Class<out ViewModel>, @JvmSuppressWildcards ViewModel>): ViewModelProviderFactory {
+        return ViewModelProviderFactory(map)
+    }
 }

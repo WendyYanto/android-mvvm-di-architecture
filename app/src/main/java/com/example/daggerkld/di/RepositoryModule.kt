@@ -9,5 +9,5 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Provides
     @Singleton
-    fun provideDataMock(): DataRepository = DataRepository()
+    fun provideDataRepository(): DataRepository = DataRepository()
 }

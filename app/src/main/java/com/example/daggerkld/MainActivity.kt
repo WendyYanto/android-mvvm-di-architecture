@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.adapter.ProductListAdapter
 import com.example.daggerkld.data.Response
-import com.example.daggerkld.di.MyApplication
+import com.example.daggerkld.di.App
 import com.example.daggerkld.extension.hide
 import com.example.daggerkld.extension.show
 import com.example.daggerkld.viewmodel.MainViewModel
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var productListAdapter: ProductListAdapter
     private lateinit var addProductTextView: EditText
     private lateinit var productStatusTextView: TextView
+    private lateinit var app: App
 
     @Inject
     lateinit var viewModel: MainViewModel
@@ -35,7 +36,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        (application as MyApplication).applicationComponent.inject(this)
+        this.app = application as App
+        this.app.applicationComponent.inject(this)
         this.init()
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
@@ -90,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkAndClickToastButton(code: Int) {
         if (code == KeyEvent.KEYCODE_ENTER) {
             this.toastButton.performClick()
-            this.hideKeyboard(toastButton)
+            this.hideKeyboard(this.toastButton)
         }
     }
 

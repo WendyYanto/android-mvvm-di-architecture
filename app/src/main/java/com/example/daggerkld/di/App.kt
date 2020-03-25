@@ -1,15 +1,15 @@
-package com.example.daggerkld.di;
+package com.example.daggerkld.di
 
-import android.app.Application;
+import android.app.Application
 
-class MyApplication: Application() {
+class App: Application() {
 
     lateinit var applicationComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
         applicationComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
+            .application(this)
             .build()
     }
 }

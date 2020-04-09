@@ -4,13 +4,22 @@ package com.example.daggerkld.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import java.lang.RuntimeException
 import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
 
-class ViewModelProviderFactory @Inject constructor(private val providerMap: Map<Class<out ViewModel>, ViewModel>) :
-    ViewModelProvider.Factory {
+@Singleton
+class ViewModelProviderFactory @Inject constructor(
+    private val providerMap: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
+) :
+    ViewModelProvider.NewInstanceFactory() {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return providerMap[modelClass] as T
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return try {
+            providerMap[modelClass]?.get() as T
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
     }
-
 }

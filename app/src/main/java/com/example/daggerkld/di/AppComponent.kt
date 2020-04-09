@@ -1,21 +1,29 @@
 package com.example.daggerkld.di
 
 import android.app.Application
-import com.example.daggerkld.MainActivity
+import com.example.daggerkld.App
 import dagger.BindsInstance
 import dagger.Component
+import dagger.android.AndroidInjectionModule
+import dagger.android.AndroidInjector
 import javax.inject.Singleton
 
-
 @Singleton
-@Component(modules = [ViewModelModule::class, RepositoryModule::class])
-interface AppComponent {
-    fun inject(mainActivity: MainActivity)
-    
+@Component(
+    modules = [
+        AndroidInjectionModule::class,
+        ViewModelProviderModule::class,
+        ViewModelModule::class,
+        RepositoryModule::class,
+        ActivityBuilder::class
+    ]
+)
+interface AppComponent : AndroidInjector<App> {
+
     @Component.Builder
     interface Builder {
-        fun build(): AppComponent
         @BindsInstance
         fun application(application: Application): Builder
+        fun build(): AppComponent
     }
 }

@@ -16,11 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.adapter.ProductListAdapter
 import com.example.daggerkld.data.Response
-import com.example.daggerkld.di.App
 import com.example.daggerkld.di.ViewModelProviderFactory
 import com.example.daggerkld.extension.hide
 import com.example.daggerkld.extension.show
 import com.example.daggerkld.viewmodel.MainViewModel
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -30,20 +31,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var productListAdapter: ProductListAdapter
     private lateinit var addProductTextView: EditText
     private lateinit var productStatusTextView: TextView
-    private lateinit var app: App
     private lateinit var viewModel: MainViewModel
 
     @Inject
     lateinit var viewModelProviderFactory: ViewModelProviderFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        this.app = application as App
-        this.app.applicationComponent.inject(this)
         this.init()
 
-        viewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel::class.java)
+        viewModel =
+            ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel::class.java)
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
                 is Response.Success -> productListAdapter.populateList(response.data)
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun click(index: Int) {
-                    this@MainActivity.viewModel.removeData(index)
+                    viewModel.removeData(index)
                 }
             })
         productListRecycleView.adapter = productListAdapter

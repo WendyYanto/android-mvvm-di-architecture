@@ -10,11 +10,12 @@ import javax.inject.Inject
 typealias ResponseData = Response<List<String>>
 
 class MainViewModel @Inject constructor(
-    private val repository: DataRepository): ViewModel() {
+    private val repository: DataRepository
+) : ViewModel() {
 
     private val data: MutableLiveData<ResponseData> by lazy {
-        MutableLiveData<ResponseData>().also {
-            it.value = Response.success(repository.get())
+        MutableLiveData<ResponseData>().apply {
+            value = Response.success(repository.get())
         }
     }
 

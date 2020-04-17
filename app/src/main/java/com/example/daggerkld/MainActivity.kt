@@ -1,30 +1,28 @@
 package com.example.daggerkld
 
-import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
+import android.app.PendingIntent
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.adapter.ProductListAdapter
+import com.example.daggerkld.base.BaseActivity
 import com.example.daggerkld.data.Response
-import com.example.daggerkld.di.ViewModelProviderFactory
 import com.example.daggerkld.extension.hide
 import com.example.daggerkld.extension.show
 import com.example.daggerkld.viewmodel.MainViewModel
-import dagger.android.AndroidInjection
-import dagger.android.AndroidInjector
-import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var toastButton: Button
     private lateinit var productListRecycleView: RecyclerView
@@ -33,11 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var productStatusTextView: TextView
     private lateinit var viewModel: MainViewModel
 
-    @Inject
-    lateinit var viewModelProviderFactory: ViewModelProviderFactory
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         this.init()
@@ -46,7 +40,10 @@ class MainActivity : AppCompatActivity() {
             ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel::class.java)
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
-                is Response.Success -> productListAdapter.populateList(response.data)
+                is Response.Success -> {
+                    productListAdapter.populateList(response.data)
+                    showNotification(response.data)
+                }
                 is Response.Error -> Toast.makeText(
                     this,
                     response.message,
@@ -75,8 +72,6 @@ class MainActivity : AppCompatActivity() {
             addProductTextView.text = null
         }
 
-        productListRecycleView.layoutManager = LinearLayoutManager(this)
-
         productListAdapter = ProductListAdapter(
             object : ProductListAdapter.ProductItemInterface {
                 override fun showProductEmptyText() {
@@ -91,7 +86,11 @@ class MainActivity : AppCompatActivity() {
                     viewModel.removeData(index)
                 }
             })
-        productListRecycleView.adapter = productListAdapter
+
+        with(productListRecycleView) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = productListAdapter
+        }
     }
 
     private fun checkAndClickToastButton(code: Int) {
@@ -101,9 +100,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun hideKeyboard(view: View) {
-        val inputMethodManager =
-            this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    private fun showNotification(products: List<String>) {
+        val inbox = NotificationCompat.InboxStyle().also { inbox ->
+            products.forEach {
+                inbox.addLine(it)
+            }
+        }
+
+        val intentToMainActivity = Intent(this, MainActivity::class.java)
+
+        val builder = NotificationCompat
+            .Builder(this, Constants.PRODUCT_NOTIFICATION_CHANNEL)
+            .setContentTitle(getString(R.string.product_notification_title, products.size))
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setStyle(inbox)
+            .setColor(Color.GREEN)
+            .setColorized(true)
+            .setContentIntent(PendingIntent.getActivity(this, 0, intentToMainActivity, 0))
+            .build()
+
+        NotificationManagerCompat.from(this).apply {
+            notify(NOTIFICATION_REQUEST_CODE, builder)
+        }
+
     }
+
+    companion object {
+        private const val NOTIFICATION_REQUEST_CODE = 1
+    }
+
 }

@@ -86,6 +86,10 @@ class MainActivity : BaseActivity() {
                     productStatusTextView.hide()
                 }
 
+                override fun scrollTop() {
+                    productListRecycleView.scrollToPosition(0)
+                }
+
                 override fun click(index: Int) {
                     viewModel.removeData(index)
                 }

@@ -16,6 +16,7 @@ class ProductListAdapter(
         fun click(index: Int)
         fun showProductEmptyText()
         fun hideProductEmptyText()
+        fun scrollTop()
     }
 
     private var data: MutableList<String>? = mutableListOf()
@@ -72,6 +73,7 @@ class ProductListAdapter(
                 data?.removeAt(position)?.apply {
                     data?.add(0, this)
                     notifyItemMoved(position, 0)
+                    productItemInterface.scrollTop()
                 }
             }
         }

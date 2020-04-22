@@ -18,12 +18,13 @@ class ProductListAdapter(
         fun hideProductEmptyText()
     }
 
-    private var data = mutableListOf<String>()
+    private var data: MutableList<String>? = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_product_item, parent, false)
-        return ProductItem(view.rootView)
+        return ProductItem(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.fragment_product_item, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -32,12 +33,10 @@ class ProductListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return data.size
+        return data?.size ?: 0
     }
 
-    fun getItem(index: Int): String {
-        return data[index]
-    }
+    fun isItemEmpty(): Boolean = data.isNullOrEmpty()
 
     fun populateList(newData: List<String>) {
         if (newData.isNullOrEmpty()) {
@@ -55,11 +54,25 @@ class ProductListAdapter(
         private var productItemTextView: TextView? = null
 
         fun bind(index: Int) {
-            val title = data[index]
+            val title = data?.get(index)
             productItemTextView = itemView.findViewById(R.id.tv_product_item_title)
             productItemTextView?.text = title
             productItemTextView?.setOnClickListener {
                 productItemInterface.click(index)
+            }
+
+            productItemTextView?.setOnLongClickListener {
+                moveToTop()
+                true
+            }
+        }
+
+        private fun moveToTop() {
+            layoutPosition.takeIf { it > 0 }?.also { position ->
+                data?.removeAt(position)?.apply {
+                    data?.add(0, this)
+                    notifyItemMoved(position, 0)
+                }
             }
         }
     }

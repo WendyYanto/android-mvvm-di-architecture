@@ -41,14 +41,18 @@ class MainActivity : BaseActivity() {
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
                 is Response.Success -> {
+                    if (productListAdapter.isItemEmpty().not()) {
+                        showNotification(response.data)
+                    }
                     productListAdapter.populateList(response.data)
-                    showNotification(response.data)
                 }
-                is Response.Error -> Toast.makeText(
-                    this,
-                    response.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                is Response.Error -> {
+                    Toast.makeText(
+                        this,
+                        response.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         })
     }
@@ -123,7 +127,6 @@ class MainActivity : BaseActivity() {
         NotificationManagerCompat.from(this).apply {
             notify(NOTIFICATION_REQUEST_CODE, builder)
         }
-
     }
 
     companion object {

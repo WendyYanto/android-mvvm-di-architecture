@@ -75,8 +75,9 @@ class ProductListAdapter(
                 val data = currentList.toMutableList()
                 data.removeAt(position)?.apply {
                     data.add(0, this)
-                    submitList(data)
-                    productItemInterface.scrollTop()
+                    submitList(data) {
+                        productItemInterface.scrollTop()
+                    }
                 }
             }
         }

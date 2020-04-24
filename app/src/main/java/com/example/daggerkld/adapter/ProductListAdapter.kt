@@ -1,5 +1,6 @@
 package com.example.daggerkld.adapter
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,6 +81,10 @@ class ProductListAdapter(
                     productItemInterface.moveTop(position)
                 }
                 true
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                itemView.elevation = 10.0f
+                itemView.translationZ = 10.0f
             }
         }
 

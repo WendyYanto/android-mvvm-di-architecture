@@ -14,10 +14,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.adapter.ProductListAdapter
 import com.example.daggerkld.base.BaseActivity
 import com.example.daggerkld.data.Response
+import com.example.daggerkld.decorator.FixedMarginItemDecorator
 import com.example.daggerkld.extension.hide
 import com.example.daggerkld.extension.show
 import com.example.daggerkld.viewmodel.MainViewModel
@@ -41,9 +43,7 @@ class MainActivity : BaseActivity() {
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
                 is Response.Success -> {
-                    if (productListAdapter.isItemEmpty().not() &&
-                        productListAdapter.isPositionUpdate().not()
-                    ) {
+                    if (shouldShowNotification(response.data.isNullOrEmpty())) {
                         showNotification(response.data)
                     }
                     populateList(response.data.toMutableList())
@@ -100,7 +100,12 @@ class MainActivity : BaseActivity() {
         with(productListRecycleView) {
             layoutManager = LinearLayoutManager(context)
             adapter = productListAdapter
+            LinearSnapHelper().also {
+                it.attachToRecyclerView(this)
+            }
+            addItemDecoration(FixedMarginItemDecorator(16))
         }
+
     }
 
     private fun checkAndClickToastButton(code: Int) {
@@ -144,6 +149,12 @@ class MainActivity : BaseActivity() {
             productListAdapter.submitList(newList)
         }
         productListAdapter.setPositionUpdateState(false)
+    }
+
+    private fun shouldShowNotification(isListNullOrEmpty: Boolean): Boolean {
+        return productListAdapter.isItemEmpty().not() &&
+                productListAdapter.isPositionUpdate().not() &&
+                isListNullOrEmpty.not()
     }
 
     companion object {

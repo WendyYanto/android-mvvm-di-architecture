@@ -4,5 +4,5 @@ interface DataRepository {
     fun add(value: String)
     fun remove(index: Int)
     fun get(): List<String>
-
+    fun move(from: Int, to: Int)
 }

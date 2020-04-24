@@ -36,4 +36,14 @@ class MainViewModel @Inject constructor(
         repository.add(value)
         data.postValue(Response.success(repository.get()))
     }
+
+    fun updateDataPosition(from: Int, to: Int) {
+        val size = repository.get().size
+        if (from in 0..size && to in 0..size) {
+            repository.move(from, to)
+            data.postValue(Response.success(repository.get()))
+        } else {
+            data.postValue(Response.error("Invalid index"))
+        }
+    }
 }

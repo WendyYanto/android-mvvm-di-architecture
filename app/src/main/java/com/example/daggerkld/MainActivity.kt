@@ -41,10 +41,20 @@ class MainActivity : BaseActivity() {
         viewModel.fetchData().observe(this, Observer { response ->
             when (response) {
                 is Response.Success -> {
-                    if (productListAdapter.isItemEmpty().not()) {
+                    if (productListAdapter.isItemEmpty().not() &&
+                        productListAdapter.isPositionUpdate().not()
+                    ) {
                         showNotification(response.data)
                     }
-                    productListAdapter.submitList(response.data.toMutableList())
+                    val newList = response.data.toMutableList()
+                    if (productListAdapter.isPositionUpdate()) {
+                        productListAdapter.submitList(newList) {
+                            productListRecycleView.scrollToPosition(0)
+                        }
+                    } else {
+                        productListAdapter.submitList(newList)
+                    }
+                    productListAdapter.setPositionUpdateState(false)
                 }
                 is Response.Error -> {
                     Toast.makeText(
@@ -86,8 +96,8 @@ class MainActivity : BaseActivity() {
                     productStatusTextView.hide()
                 }
 
-                override fun scrollTop() {
-                    productListRecycleView.scrollToPosition(0)
+                override fun moveTop(index: Int) {
+                    viewModel.updateDataPosition(index, 0)
                 }
 
                 override fun click(index: Int) {

@@ -14,11 +14,13 @@ class ProductListAdapter(
     private val productItemInterface: ProductItemInterface
 ) : ListAdapter<String, RecyclerView.ViewHolder>(DIFF_UTIL) {
 
+    private var positionUpdateState = false
+
     interface ProductItemInterface {
         fun click(index: Int)
         fun showProductEmptyText()
         fun hideProductEmptyText()
-        fun scrollTop()
+        fun moveTop(index: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -34,6 +36,14 @@ class ProductListAdapter(
     }
 
     fun isItemEmpty(): Boolean = currentList.isNullOrEmpty()
+
+    fun isPositionUpdate(): Boolean {
+        return this.positionUpdateState
+    }
+
+    fun setPositionUpdateState(value: Boolean) {
+        this.positionUpdateState = value
+    }
 
     override fun submitList(list: MutableList<String>?) {
         if (list.isNullOrEmpty()) {
@@ -65,22 +75,14 @@ class ProductListAdapter(
                 productItemInterface.click(adapterPosition)
             }
             itemView.setOnLongClickListener {
-                moveToTop()
+                layoutPosition.takeIf { it > 0 }?.also { position ->
+                    positionUpdateState = true
+                    productItemInterface.moveTop(position)
+                }
                 true
             }
         }
 
-        private fun moveToTop() {
-            layoutPosition.takeIf { it > 0 }?.also { position ->
-                val data = currentList.toMutableList()
-                data.removeAt(position)?.apply {
-                    data.add(0, this)
-                    submitList(data) {
-                        productItemInterface.scrollTop()
-                    }
-                }
-            }
-        }
     }
 
     companion object {

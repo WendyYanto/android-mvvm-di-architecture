@@ -23,4 +23,10 @@ class DataRepositoryImpl : DataRepository {
     override fun get(): List<String> {
         return this.data
     }
+
+    override fun move(from: Int, to: Int) {
+         this.data.removeAt(from).apply {
+             data.add(to, this)
+         }
+    }
 }

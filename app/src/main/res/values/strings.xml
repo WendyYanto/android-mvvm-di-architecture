@@ -4,4 +4,5 @@
     <string name="add_product_here">Add Product Here</string>
     <string name="your_product_is_empty">Your product is empty</string>
     <string name="product_notification_title">You have %d products currently</string>
+    <string name="please_wait_while_adapter_changes">Please wait while animation is ongoing …</string>
 </resources>

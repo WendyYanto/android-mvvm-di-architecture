@@ -44,7 +44,7 @@ class MainActivity : BaseActivity() {
                     if (productListAdapter.isItemEmpty().not()) {
                         showNotification(response.data)
                     }
-                    productListAdapter.populateList(response.data)
+                    productListAdapter.submitList(response.data.toMutableList())
                 }
                 is Response.Error -> {
                     Toast.makeText(

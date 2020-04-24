@@ -1,6 +1,6 @@
 package com.example.daggerkld.repository
 
-class DataRepositoryImpl: DataRepository {
+class DataRepositoryImpl : DataRepository {
 
     private val data: MutableList<String> = ArrayList()
 

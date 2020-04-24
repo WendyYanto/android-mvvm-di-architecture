@@ -4,13 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.daggerkld.R
 
 class ProductListAdapter(
     private val productItemInterface: ProductItemInterface
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : ListAdapter<String, RecyclerView.ViewHolder>(DIFF_UTIL) {
 
     interface ProductItemInterface {
         fun click(index: Int)
@@ -18,8 +20,6 @@ class ProductListAdapter(
         fun hideProductEmptyText()
         fun scrollTop()
     }
-
-    private var data: MutableList<String>? = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ProductItem(
@@ -33,20 +33,15 @@ class ProductListAdapter(
         productItem.bind(position)
     }
 
-    override fun getItemCount(): Int {
-        return data?.size ?: 0
-    }
+    fun isItemEmpty(): Boolean = currentList.isNullOrEmpty()
 
-    fun isItemEmpty(): Boolean = data.isNullOrEmpty()
-
-    fun populateList(newData: List<String>) {
-        if (newData.isNullOrEmpty()) {
+    override fun submitList(list: MutableList<String>?) {
+        if (list.isNullOrEmpty()) {
             productItemInterface.showProductEmptyText()
         } else {
             productItemInterface.hideProductEmptyText()
         }
-        data = newData.toMutableList()
-        this.notifyDataSetChanged()
+        super.submitList(list)
     }
 
     inner class ProductItem(
@@ -55,14 +50,21 @@ class ProductListAdapter(
         private var productItemTextView: TextView? = null
 
         fun bind(index: Int) {
-            val title = data?.get(index)
+            val title = currentList[index]
             productItemTextView = itemView.findViewById(R.id.tv_product_item_title)
             productItemTextView?.text = title
-            productItemTextView?.setOnClickListener {
-                productItemInterface.click(index)
+            itemView.setOnClickListener {
+                if (adapterPosition == RecyclerView.NO_POSITION) {
+                    Toast.makeText(
+                        itemView.context,
+                        itemView.context.getString(R.string.please_wait_while_adapter_changes),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+                productItemInterface.click(adapterPosition)
             }
-
-            productItemTextView?.setOnLongClickListener {
+            itemView.setOnLongClickListener {
                 moveToTop()
                 true
             }
@@ -70,11 +72,24 @@ class ProductListAdapter(
 
         private fun moveToTop() {
             layoutPosition.takeIf { it > 0 }?.also { position ->
-                data?.removeAt(position)?.apply {
-                    data?.add(0, this)
-                    notifyItemMoved(position, 0)
+                val data = currentList.toMutableList()
+                data.removeAt(position)?.apply {
+                    data.add(0, this)
+                    submitList(data)
                     productItemInterface.scrollTop()
                 }
+            }
+        }
+    }
+
+    companion object {
+        private val DIFF_UTIL = object : DiffUtil.ItemCallback<String>() {
+            override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
+                return oldItem == newItem
             }
         }
     }

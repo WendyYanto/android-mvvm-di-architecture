@@ -46,15 +46,7 @@ class MainActivity : BaseActivity() {
                     ) {
                         showNotification(response.data)
                     }
-                    val newList = response.data.toMutableList()
-                    if (productListAdapter.isPositionUpdate()) {
-                        productListAdapter.submitList(newList) {
-                            productListRecycleView.scrollToPosition(0)
-                        }
-                    } else {
-                        productListAdapter.submitList(newList)
-                    }
-                    productListAdapter.setPositionUpdateState(false)
+                    populateList(response.data.toMutableList())
                 }
                 is Response.Error -> {
                     Toast.makeText(
@@ -141,6 +133,17 @@ class MainActivity : BaseActivity() {
         NotificationManagerCompat.from(this).apply {
             notify(NOTIFICATION_REQUEST_CODE, builder)
         }
+    }
+
+    private fun populateList(newList: MutableList<String>) {
+        if (productListAdapter.isPositionUpdate()) {
+            productListAdapter.submitList(newList) {
+                productListRecycleView.scrollToPosition(0)
+            }
+        } else {
+            productListAdapter.submitList(newList)
+        }
+        productListAdapter.setPositionUpdateState(false)
     }
 
     companion object {
